@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # MySQL数据库
+  mysql:
+    image: mysql:8.0
+    container_name: springai-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: your-mysql-password
+      MYSQL_DATABASE: spring_ai
+      MYSQL_USER: springai
+      MYSQL_PASSWORD: springai123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+
+  # Redis缓存
+  redis:
+    image: redis:7-alpine
+    container_name: springai-redis
+    command: redis-server --requirepass your-redis-password
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  # SpringAI应用
+  app:
+    build: .
+    container_name: springai-app
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=spring_ai
+      - DB_USERNAME=springai
+      - DB_PASSWORD=springai123
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=your-redis-password
+      - JWT_SECRET=your-jwt-secret-key
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+    depends_on:
+      - mysql
+      - redis
+    volumes:
+      - ./logs:/app/logs
+
+volumes:
+  mysql_data:
+  redis_data:

@@ -1,0 +1,70 @@
+spring:
+  profiles:
+    active: deepseek
+  application:
+    name: springai-mcp-client
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      base-url: ${OPENAI_BASE_URL}
+      chat:
+        options:
+          model: ${OPENAI_MODEL}
+      embedding:
+        options:
+          model: ${OPENAI_EMBEDDING_MODEL:text-embedding-ada-002}
+    deepseek:
+      api-key: ${DEEPSEEK_API_KEY}
+      base-url: ${DEEPSEEK_BASE_URL}
+      chat:
+        options:
+          model: ${DEEPSEEK_MODEL}
+    vectorstore:
+      type: redis
+      redis:
+        initialize-schema: true
+        index-name: vectorstore-idx
+        prefix: 'embedding:'
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:spring_ai}?useUnicode=true&serverTimezone=Asia/Shanghai
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+    jpa:
+      hibernate:
+        ddl-auto: update
+      show-sql: false
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.MySQL8Dialect
+          format_sql: true
+      database-platform: org.hibernate.dialect.MySQL8Dialect
+
+# JWT配置
+jwt:
+  secret: ${JWT_SECRET:your-jwt-secret-key-here}
+  expiration: ${JWT_EXPIRATION:604800000}
+
+website:
+  domain: ${WEBSITE_DOMAIN:localhost}
+
+logging:
+  level:
+    root: info
+
+internet:
+  websearch:
+    searxng:
+      url: ${SEARXNG_URL:http://localhost:6080/search}
+      counts: 10
